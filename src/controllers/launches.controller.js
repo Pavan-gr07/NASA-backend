@@ -5,7 +5,6 @@ const httpGetAllLaunches = async (req, res, next) => {
     const launches = await Launches.find();
     return res.status(200).json(launches);
   } catch (error) {
-    next(error);
     console.error("Error getting launches:", error);
     return res.status(500).json({ error: "Internal server error" });
   }
@@ -17,6 +16,7 @@ const httpLAddNewLaunches = async (req, res, next) => {
   if (!mission || !rocket || !target || !launchDate) {
     return res.status(400).send("All fields are required");
   }
+
   try {
     const launch = await Launches.create({
       mission,
@@ -27,10 +27,9 @@ const httpLAddNewLaunches = async (req, res, next) => {
 
     return res
       .status(200)
-      .json({ message: "launch added successfully", launch });
+      .json({ message: "Launch added successfully", launch });
   } catch (error) {
-    next(error);
-    console.error("Error adding budget:", error);
+    console.error("Error adding launch:", error);
     return res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -41,17 +40,20 @@ const httpAbortLaunch = async (req, res, next) => {
   if (!launchId) {
     return res.status(400).send("LaunchId is required");
   }
+
   try {
     const launch = await Launches.findById(launchId);
+    if (!launch) {
+      return res.status(404).json({ error: "Launch not found" });
+    }
+
     launch.up_coming = false;
     launch.success = false;
-
     await launch.save();
 
-    return res.status(200).json({ message: "Launch Aborted successfully" });
+    return res.status(200).json({ message: "Launch aborted successfully" });
   } catch (error) {
-    next(error);
-    console.error("Error adding budget:", error);
+    console.error("Error aborting launch:", error);
     return res.status(500).json({ error: "Internal server error" });
   }
 };
