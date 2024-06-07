@@ -19,7 +19,12 @@ app.use(express.static(path.join(__dirname, "..", "public")));
 app.use(express.json());
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: [
+      "https://main.d303fko48e77mg.amplifyapp.com/",
+      "http://13.126.132.34:9000",
+    ],
+    methods: "GET,POST,PUT,DELETE",
+    allowedHeaders: "Content-Type,Authorization",
   })
 );
 // Middleware to parse JSON bodies
