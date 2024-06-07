@@ -2,6 +2,9 @@ const express = require("express");
 const cors = require("cors");
 const path = require("path");
 const morgan = require("morgan");
+const https = require("https");
+const fs = require("fs");
+
 const { connectDatabase } = require("./src/db/db");
 
 const planetsRouter = require("./src/routes/planets.router");
@@ -33,9 +36,19 @@ app.use(morgan("combined"));
 app.use("/", launchesRoutes);
 app.use("/planets", planetsRouter);
 
-app.listen(process.env.PORT, function () {
-  console.log(`Server is running on port ${process.env.PORT}`);
-});
+const httpsOptions = {
+  key: fs.readFileSync("./src/utils/nasa-backend.pem"),
+};
+
+// app.listen(process.env.PORT, function () {
+//   console.log(`Server is running on port ${process.env.PORT}`);
+// });
+
+https
+  .createServer(httpsOptions, app)
+  .listen(process.env.PORT, "0.0.0.0", () => {
+    console.log(`Server is running on port ${process.env.PORT} over HTTPS`);
+  });
 
 app.get("/*", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
