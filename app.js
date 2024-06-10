@@ -17,14 +17,19 @@ console.log("first");
 const app = express();
 app.use(express.static(path.join(__dirname, "..", "public")));
 
+//middleware
+app.use(cors());
 app.use(express.json());
-app.use(
-  cors({
-    origin: ["https://main.d303fko48e77mg.amplifyapp.com/"],
-    methods: "GET,POST,PUT,DELETE",
-    allowedHeaders: "Content-Type,Authorization",
-  })
-);
+app.use(express.urlencoded({ extended: true }));
+
+// app.use(express.json());
+// app.use(
+//   cors({
+//     origin: ["https://main.d303fko48e77mg.amplifyapp.com/"],
+//     methods: "GET,POST,PUT,DELETE",
+//     allowedHeaders: "Content-Type,Authorization",
+//   })
+// );
 // Middleware to parse JSON bodies
 app.use(morgan("combined"));
 
